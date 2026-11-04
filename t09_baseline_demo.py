@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--max-rules", type=int, default=50)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--show", type=int, default=12, help="Number of first samples to print")
-    parser.add_argument("--output", default="t09_smoke_trace.csv")
+    parser.add_argument("--output", default="outputs/t09_smoke_trace.csv")
     args = parser.parse_args()
     if args.n < 6 or not 0 <= args.warmup < args.n or args.max_rules < 1:
         parser.error("Require n>=6, 0<=warmup<n, and max-rules>=1")
