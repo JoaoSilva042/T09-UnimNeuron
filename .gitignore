@@ -208,3 +208,8 @@ __marimo__/
 
 # Local experiment outputs
 outputs/
+
+# T09
+.DS_Store
+Claude outputs/
+results/
