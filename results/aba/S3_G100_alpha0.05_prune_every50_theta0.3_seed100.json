@@ -1,0 +1,57 @@
+{
+  "stream": "aba",
+  "stream_info": {
+    "n_features": 2,
+    "n_classes": 2,
+    "drift_points": [
+      1666,
+      3333
+    ],
+    "generator": "aba",
+    "params": {
+      "A": "U[0,0.6]^2, y=1[x0>0.3]",
+      "B": "U[0.4,1]^2, y=1[x1>0.7]"
+    }
+  },
+  "seed": 100,
+  "n": 5000,
+  "variant": "S3",
+  "model_class": "S3EMA",
+  "max_rules": 1000,
+  "params": {
+    "alpha": 0.05,
+    "theta": 0.3,
+    "G": 100,
+    "prune_every": 50
+  },
+  "params_effective": {
+    "beta": 0.9,
+    "act_min_rel": 0.3,
+    "dist_factor_rel": 3.0,
+    "H": 200,
+    "prune_every": 50,
+    "recreate_window": 500,
+    "alpha": 0.05,
+    "theta": 0.3,
+    "G": 100
+  },
+  "warmup_used_in_summary": 50,
+  "summary": {
+    "accuracy_after_warmup": 0.6547474747474747,
+    "rules_mean": 39.2606,
+    "rules_max": 55,
+    "rules_final": 50,
+    "n_created": 80,
+    "n_pruned": 30,
+    "n_recreated": 1,
+    "n_class_blocks": 0,
+    "capacity_deletions": 0,
+    "valid": true,
+    "time_total_s": 15.259,
+    "time_per_obs_ms": 3.0518
+  },
+  "git_commit": null,
+  "date": "2026-11-27T14:55:11",
+  "python": "3.12.14",
+  "numpy": "2.5.4"
+}

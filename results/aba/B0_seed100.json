@@ -1,0 +1,42 @@
+{
+  "stream": "aba",
+  "stream_info": {
+    "n_features": 2,
+    "n_classes": 2,
+    "drift_points": [
+      1666,
+      3333
+    ],
+    "generator": "aba",
+    "params": {
+      "A": "U[0,0.6]^2, y=1[x0>0.3]",
+      "B": "U[0.4,1]^2, y=1[x1>0.7]"
+    }
+  },
+  "seed": 100,
+  "n": 5000,
+  "variant": "B0",
+  "model_class": "B0Counted",
+  "max_rules": 1000,
+  "params": {},
+  "params_effective": {},
+  "warmup_used_in_summary": 50,
+  "summary": {
+    "accuracy_after_warmup": 0.7424242424242424,
+    "rules_mean": 54.1366,
+    "rules_max": 80,
+    "rules_final": 80,
+    "n_created": 80,
+    "n_pruned": 0,
+    "n_recreated": 0,
+    "n_class_blocks": 0,
+    "capacity_deletions": 0,
+    "valid": true,
+    "time_total_s": 14.308,
+    "time_per_obs_ms": 2.8616
+  },
+  "git_commit": null,
+  "date": "2026-11-27T14:53:15",
+  "python": "3.12.14",
+  "numpy": "2.5.4"
+}

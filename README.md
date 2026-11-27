@@ -134,9 +134,10 @@ Parâmetros fixos (não entram na grelha):
 | Stream | Papel | Configuração |
 |---|---|---|
 | A–B–A (nosso) | drift recorrente; testa remoção prematura e recriação | A: x ~ U[0; 0,6]², y = 1[x₀ > 0,3]; B: x ~ U[0,4; 1]², y = 1[x₁ > 0,7]; A regressa; mudanças a 1/3 e 2/3 |
-| RandomRBFDrift_synth | drift contínuo em P(x) e P(y\|x) | `change_speed` > 0 [a preencher], nº de centróides [a preencher] |
+| RandomRBFDrift_synth | Drift contínuo em P(x) e P(y|x) | change_speed = 0.001, n_centroids = 50, n_drift_centroids = 50, seed_model = seed_sample = 100 na experiência preliminar |
 | ConceptDrift_Agrawal | controlo negativo: só P(y\|x) muda | funções [a preencher], posição e largura do drift [a preencher] |
 | Elec2_real | dados reais; teste de transferência | prefixo usado [a preencher] |
+
 
 O pruning por atividade só pode atuar quando P(x) muda; o Agrawal serve para mostrar o que acontece quando não muda.
 
@@ -385,22 +386,30 @@ Estimativa de custo: cada corrida de 20 000 obs. demora ≈ 77 s no pior caso (B
 
 ### 8.2. Avaliação preliminar com `metrics.py`
 
-Foi realizada uma avaliação exploratória dos quatro modelos no stream A–B–A, com 5.000 observações, seed 100 e warm-up de 50 observações.
+Foram avaliados os três modelos nos streams A–B–A, Agrawal e RandomRBFDrift, com 5.000 observações, seed 100 e warm-up de 50 observações. Os resultados são exploratórios, sem tuning sistemático.
 
-| Variante | Accuracy | Macro-F1 | Regras médias | Redução de regras |
-|---|---:|---:|---:|---:|
-| B0 | 74,24% | 73,68% | 54,60 | — |
-| S1 | 69,56% | 69,54% | 29,15 | 46,61% |
-| S2 | 68,91% | 68,91% | 28,20 | 48,36% |
-| S3 | 65,47% | 65,47% | 39,57 | 27,52% |
+| Stream | Modelo | Accuracy | Regras médias | Redução |
+|---|---|---:|---:|---:|
+| A–B–A | B0 | 74,24% | 54,60 | — |
+| | S1 | 69,56% | 29,15 | 46,61% |
+| | S2 | 68,91% | 28,20 | 48,36% |
+| | S3 | 65,47% | 39,57 | 27,52% |
+| Agrawal | B0 | 69,70% | 51,31 | — |
+| | S1 | 69,68% | 34,94 | 31,91% |
+| | S2 | 69,78% | 27,65 | 46,11% |
+| | S3 | 69,70% | 51,31 | 0% |
+| RBF | B0 | 54,36% | 102,45 | — |
+| | S1 | 54,24% | 46,78 | 54,34% |
+| | S2 | 54,36% | 30,16 | 70,56% |
+| | S3 | 54,36% | 102,45 | 0% |
 
 Todas as corridas foram consideradas válidas, sem eliminações por capacidade.
 
-Nesta configuração exploratória, S1 e S2 reduziram aproximadamente metade do número médio de regras, mas apresentaram perdas de accuracy de 4,69 e 5,33 pontos percentuais relativamente a B0. S3 obteve a maior perda preditiva, de 8,77 pontos percentuais.
+S2 apresentou a maior redução média de regras nos três streams. No Agrawal e no RBF, S1 e S2 mantiveram accuracy próxima de B0, apesar da redução estrutural. No A–B–A, o pruning provocou perdas preditivas mais acentuadas.
 
-Os gráficos de accuracy em janela móvel e evolução das regras mostram diferenças mais acentuadas após as mudanças de conceito, particularmente no regresso ao conceito A.
+S3 apenas efetuou pruning no A–B–A. Nos restantes streams, manteve o mesmo número de regras e desempenho preditivo de B0.
 
-Estes resultados são preliminares, baseados numa única seed de desenvolvimento e em hiperparâmetros não otimizados. Não permitem estabelecer superioridade estatística entre variantes.
+Os resultados sugerem que a eficácia dos métodos depende das características do stream. São necessárias experiências com várias seeds e hiperparâmetros selecionados previamente para confirmar estas observações.
 
 ---
 
@@ -441,7 +450,17 @@ A análise estatística será feita após as experiências com várias seeds. O 
 
 ## 10. Interpretação e conclusões
 
-[a preencher: qual sinal equilibra melhor compacidade e estabilidade; o que acontece no controlo negativo (Agrawal); remoção prematura no A–B–A; transferência para o Elec2; limitações]
+Os resultados preliminares mostram que S2 apresenta a maior compactação estrutural nos três streams, mas a preservação da accuracy depende do tipo de concept drift.
+
+No A–B–A, todos os métodos de pruning tiveram perdas preditivas superiores à margem definida de 1 ponto percentual, especialmente após o regresso do conceito A. Isto sugere um possível problema de eliminação prematura de regras.
+
+No RBF e no Agrawal, S1 e S2 reduziram significativamente o número de regras sem perdas relevantes de accuracy. No entanto, o desempenho relativamente baixo no RBF exige uma análise adicional da qualidade preditiva. S3 não realizou pruning nestes dois streams.
+
+Estes resultados indicam que uma menor quantidade de regras não implica necessariamente pior desempenho, mas também que a eliminação de regras pode prejudicar conceitos recorrentes.
+
+As conclusões ainda são preliminares, uma vez que foi utilizada apenas uma seed de desenvolvimento e não houve tuning sistemático. Faltam a avaliação no Elec2, múltiplas seeds, análise estatística e medição quantitativa da recuperação após drift.
+
+Assim, S2 é atualmente o método mais promissor em termos de compactação, mas ainda não é possível determinar qual apresenta o melhor equilíbrio global entre complexidade e estabilidade preditiva.
 
 ---
 
@@ -455,7 +474,7 @@ A análise estatística será feita após as experiências com várias seeds. O 
 | 20/11/2026 | valores por defeito do S3: θ = 0,3, G = 200 (centro da grelha) | alinhar com a grelha relativa |
 | 20/11/2026 | grelhas propostas a partir do diagnóstico no A–B–A: S1 H ∈ {50…1600}; S2 H₀ ∈ {20, 30, 50} × k ∈ {3, 5, 10}; S3 α ∈ {0,005; 0,01; 0,02} × θ ∈ {0,25; 0,3; 0,35}, G = 200 | as grelhas do plano inicial tinham valores fora da escala medida (H₀ = 100 desativava o termo adaptativo; θ = 0,5 removeria regras em uso) |
 | 27/11/2026 | Implementados `metrics.py` e `stats.py` para avaliação preditiva, estrutural e estatística | Automatizar a análise e comparação dos modelos B0, S1, S2 e S3 |
-| 27/11/2026 | Geradas métricas e gráficos da experiência A–B–A (5.000 observações, seed 100) | Obter resultados preliminares e analisar o impacto do pruning na accuracy e no número de regras |
+| 27/11/2026 | Realizada avaliação preliminar de B0, S1, S2 e S3 nos streams A–B–A, RBF e Agrawal | Comparar o impacto do pruning na accuracy e na complexidade estrutural em diferentes cenários de drift |
 | 27/11/2026 | Identificadas limitações na análise estatística e recuperação após drift | Definir o trabalho pendente para a avaliação final |
 
 ---

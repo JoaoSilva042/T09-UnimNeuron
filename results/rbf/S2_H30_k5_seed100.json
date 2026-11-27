@@ -1,0 +1,54 @@
+{
+  "stream": "rbf",
+  "stream_info": {
+    "n_features": 10,
+    "n_classes": 2,
+    "drift_points": [],
+    "generator": "rbf",
+    "params": {
+      "change_speed": 0.001,
+      "n_centroids": 50,
+      "n_drift_centroids": 50,
+      "seed_model": 100,
+      "seed_sample": 100
+    }
+  },
+  "seed": 100,
+  "n": 5000,
+  "variant": "S2",
+  "model_class": "S2Adaptive",
+  "max_rules": 1000,
+  "params": {
+    "H": 30,
+    "k": 5
+  },
+  "params_effective": {
+    "beta": 0.9,
+    "act_min_rel": 0.3,
+    "dist_factor_rel": 3.0,
+    "H": 30,
+    "prune_every": 1,
+    "recreate_window": 500,
+    "k": 5.0,
+    "n_min": 6
+  },
+  "warmup_used_in_summary": 50,
+  "summary": {
+    "accuracy_after_warmup": 0.5436363636363636,
+    "rules_mean": 29.889,
+    "rules_max": 39,
+    "rules_final": 38,
+    "n_created": 227,
+    "n_pruned": 189,
+    "n_recreated": 17,
+    "n_class_blocks": 51,
+    "capacity_deletions": 0,
+    "valid": true,
+    "time_total_s": 18.314,
+    "time_per_obs_ms": 3.6629
+  },
+  "git_commit": "328bc58",
+  "date": "2026-11-27T15:54:53",
+  "python": "3.12.14",
+  "numpy": "2.5.4"
+}

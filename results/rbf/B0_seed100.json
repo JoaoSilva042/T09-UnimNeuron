@@ -1,0 +1,42 @@
+{
+  "stream": "rbf",
+  "stream_info": {
+    "n_features": 10,
+    "n_classes": 2,
+    "drift_points": [],
+    "generator": "rbf",
+    "params": {
+      "change_speed": 0.001,
+      "n_centroids": 50,
+      "n_drift_centroids": 50,
+      "seed_model": 100,
+      "seed_sample": 100
+    }
+  },
+  "seed": 100,
+  "n": 5000,
+  "variant": "B0",
+  "model_class": "B0Counted",
+  "max_rules": 1000,
+  "params": {},
+  "params_effective": {},
+  "warmup_used_in_summary": 50,
+  "summary": {
+    "accuracy_after_warmup": 0.5436363636363636,
+    "rules_mean": 101.4566,
+    "rules_max": 174,
+    "rules_final": 174,
+    "n_created": 174,
+    "n_pruned": 0,
+    "n_recreated": 0,
+    "n_class_blocks": 0,
+    "capacity_deletions": 0,
+    "valid": true,
+    "time_total_s": 35.376,
+    "time_per_obs_ms": 7.0752
+  },
+  "git_commit": "328bc58",
+  "date": "2026-11-27T15:50:19",
+  "python": "3.12.14",
+  "numpy": "2.5.4"
+}

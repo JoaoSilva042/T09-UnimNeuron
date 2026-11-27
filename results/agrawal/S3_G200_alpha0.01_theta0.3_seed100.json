@@ -1,0 +1,58 @@
+{
+  "stream": "agrawal",
+  "stream_info": {
+    "n_features": 9,
+    "n_classes": 2,
+    "drift_points": [
+      2500
+    ],
+    "generator": "agrawal",
+    "params": {
+      "f_before": 0,
+      "f_after": 4,
+      "position": 2500,
+      "width": 1000,
+      "seed": 100
+    }
+  },
+  "seed": 100,
+  "n": 5000,
+  "variant": "S3",
+  "model_class": "S3EMA",
+  "max_rules": 1000,
+  "params": {
+    "alpha": 0.01,
+    "theta": 0.3,
+    "G": 200
+  },
+  "params_effective": {
+    "beta": 0.9,
+    "act_min_rel": 0.3,
+    "dist_factor_rel": 3.0,
+    "H": 200,
+    "prune_every": 1,
+    "recreate_window": 500,
+    "alpha": 0.01,
+    "theta": 0.3,
+    "G": 200
+  },
+  "warmup_used_in_summary": 50,
+  "summary": {
+    "accuracy_after_warmup": 0.696969696969697,
+    "rules_mean": 50.8856,
+    "rules_max": 80,
+    "rules_final": 80,
+    "n_created": 80,
+    "n_pruned": 0,
+    "n_recreated": 0,
+    "n_class_blocks": 0,
+    "capacity_deletions": 0,
+    "valid": true,
+    "time_total_s": 27.562,
+    "time_per_obs_ms": 5.5124
+  },
+  "git_commit": "328bc58",
+  "date": "2026-11-27T16:05:23",
+  "python": "3.12.14",
+  "numpy": "2.5.4"
+}

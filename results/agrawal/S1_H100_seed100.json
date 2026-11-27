@@ -1,0 +1,53 @@
+{
+  "stream": "agrawal",
+  "stream_info": {
+    "n_features": 9,
+    "n_classes": 2,
+    "drift_points": [
+      2500
+    ],
+    "generator": "agrawal",
+    "params": {
+      "f_before": 0,
+      "f_after": 4,
+      "position": 2500,
+      "width": 1000,
+      "seed": 100
+    }
+  },
+  "seed": 100,
+  "n": 5000,
+  "variant": "S1",
+  "model_class": "S1Fixed",
+  "max_rules": 1000,
+  "params": {
+    "H": 100
+  },
+  "params_effective": {
+    "beta": 0.9,
+    "act_min_rel": 0.3,
+    "dist_factor_rel": 3.0,
+    "H": 100,
+    "prune_every": 1,
+    "recreate_window": 500
+  },
+  "warmup_used_in_summary": 50,
+  "summary": {
+    "accuracy_after_warmup": 0.6967676767676768,
+    "rules_mean": 34.6772,
+    "rules_max": 56,
+    "rules_final": 56,
+    "n_created": 71,
+    "n_pruned": 15,
+    "n_recreated": 11,
+    "n_class_blocks": 0,
+    "capacity_deletions": 0,
+    "valid": true,
+    "time_total_s": 18.656,
+    "time_per_obs_ms": 3.7311
+  },
+  "git_commit": "328bc58",
+  "date": "2026-11-27T16:03:57",
+  "python": "3.12.14",
+  "numpy": "2.5.4"
+}
