@@ -22,7 +22,8 @@ Protocolo congelado a **20/11/2026**. Qualquer alteração posterior fica regist
 | Streams | A–B–A implementado em `t09/streams.py`; RandomRBFDrift, ConceptDrift_Agrawal e Elec2 [a preencher] |
 | MVE (B0, S1, S2, S3 no A–B–A, 1 seed) | feito — ver [secção 8](#8-medições-já-feitas) |
 | Ficheiro de testes (`tests/test_pruning.py`) | por fazer (os testes abaixo foram feitos à mão) |
-| `metrics.py` / `stats.py` | [a preencher] |
+| `metrics.py` | Implementado e testado; calcula métricas preditivas, estruturais e de recursos e gera gráficos comparativos. |
+| `stats.py` | Implementado; análise estatística emparelhada com Wilcoxon, correção de Holm e Friedman. Aguarda múltiplas seeds para validação experimental. |
 | Grelhas de hiperparâmetros | propostas para A–B–A; falta diagnóstico em RBF e Agrawal |
 | Diagnóstico (`t09/diagnostics.py`) | feito no A–B–A (seed 100); por fazer em RBF e Agrawal |
 
@@ -227,10 +228,12 @@ UnimNeuron-EvolvingNF/
 │   ├── streams.py              # geradores de streams + registo STREAMS
 │   ├── run_experiment.py       # uma corrida prequential → CSV + .json
 │   ├── diagnostics.py          # diagnóstico das grelhas (B0 sem pruning)
-│   ├── metrics.py              # [a preencher]
-│   └── stats.py                # [a preencher]
+│   ├── metrics.py              # métricas, compactação e gráficos
+│   └── stats.py                # Wilcoxon, Holm e Friedman
 ├── results/<stream>/<variante>[_<params>]_seed<k>.csv   (+ .json)
-└── README.md
+├── results/                    # Resultados das experiências
+├── evaluation/                 # Métricas, tabelas e gráficos
+└── README.md                   # Documentação do projeto
 ```
 
 ### Ficheiros
@@ -245,6 +248,10 @@ UnimNeuron-EvolvingNF/
 **`prunning.py`** — as variantes (ver [secção 3.2](#32-variantes)).
 
 **`diagnostics.py`** — ver [secção 5](#5-grelhas-de-hiperparâmetros).
+
+**`metrics.py`** — analisa os CSVs gerados pelo `run_experiment.py` e calcula métricas preditivas (accuracy, macro-F1), estruturais (número médio, máximo e final de regras, compression ratio, pruning e recriações) e computacionais (runtime e tempo por observação). Exclui o warm-up, verifica a validade das corridas e gera `summary_runs.csv` e gráficos de evolução das regras e accuracy em janela móvel.
+
+**`stats.py`** — realiza comparações estatísticas emparelhadas entre B0, S1, S2 e S3, utilizando os resultados de `summary_runs.csv`. Implementa Wilcoxon signed-rank, correção de Holm e Friedman para comparar accuracy e número médio de regras. Quando existem dados suficientes, guarda os resultados em `paired_tests.csv`.
 
 Formato de resultados (uma linha por observação):
 
@@ -313,7 +320,7 @@ Notas do MVE preliminar (stream do demo, 3 000 obs., não conclusivo):
 
 ## 6. Métricas
 
-**Preditivas** (excluem o warm-up): accuracy prequential (principal), macro-F1, accuracy em janela móvel de [a preencher] observações, registada a cada [a preencher].
+**Preditivas** (excluem o warm-up): accuracy prequential (principal), macro-F1 e accuracy em janela móvel de 500 observações, registada a cada 100 observações.
 
 **Estruturais:** número de regras (média, máximo, final, curva), compression ratio = regras médias da variante / regras médias de B0, eventos de pruning, regras recriadas.
 
@@ -376,6 +383,25 @@ Primeiras observações (uma seed, sem tuning — **não são conclusões**):
 
 Estimativa de custo: cada corrida de 20 000 obs. demora ≈ 77 s no pior caso (B0), por isso o tempo total ≈ nº de corridas × 77 s, dividido por até 4 se correrem em paralelo. O nº de corridas depende das seeds e repetições ainda por fixar. O Agrawal (9 features) vai ser mais lento — [a medir].
 
+### 8.2. Avaliação preliminar com `metrics.py`
+
+Foi realizada uma avaliação exploratória dos quatro modelos no stream A–B–A, com 5.000 observações, seed 100 e warm-up de 50 observações.
+
+| Variante | Accuracy | Macro-F1 | Regras médias | Redução de regras |
+|---|---:|---:|---:|---:|
+| B0 | 74,24% | 73,68% | 54,60 | — |
+| S1 | 69,56% | 69,54% | 29,15 | 46,61% |
+| S2 | 68,91% | 68,91% | 28,20 | 48,36% |
+| S3 | 65,47% | 65,47% | 39,57 | 27,52% |
+
+Todas as corridas foram consideradas válidas, sem eliminações por capacidade.
+
+Nesta configuração exploratória, S1 e S2 reduziram aproximadamente metade do número médio de regras, mas apresentaram perdas de accuracy de 4,69 e 5,33 pontos percentuais relativamente a B0. S3 obteve a maior perda preditiva, de 8,77 pontos percentuais.
+
+Os gráficos de accuracy em janela móvel e evolução das regras mostram diferenças mais acentuadas após as mudanças de conceito, particularmente no regresso ao conceito A.
+
+Estes resultados são preliminares, baseados numa única seed de desenvolvimento e em hiperparâmetros não otimizados. Não permitem estabelecer superioridade estatística entre variantes.
+
 ---
 
 ## 9. Resultados
@@ -402,11 +428,14 @@ Estimativa de custo: cada corrida de 20 000 obs. demora ≈ 77 s no pior caso (B
 
 ### 9.3 Recuperação após drift
 
-[a preencher]
+No stream A–B–A, o B0 apresentou melhor recuperação da accuracy após as mudanças de conceito. As variantes com pruning, especialmente S3, tiveram maiores perdas de desempenho.
+O tempo de recuperação ainda não foi calculado. Futuramente, será medido até a accuracy recuperar 95% do valor anterior ao drift, utilizando várias seeds.
 
 ### 9.4 Testes estatísticos
 
-[a preencher]
+O stats.py está implementado e inclui os testes Wilcoxon, Friedman e a correção de Holm para comparar B0, S1, S2 e S3. Atualmente, existe apenas uma seed (100), pelo que ainda
+não há dados suficientes para realizar os testes.
+A análise estatística será feita após as experiências com várias seeds. O teste de Nemenyi ainda falta implementar.
 
 ---
 
@@ -425,7 +454,9 @@ Estimativa de custo: cada corrida de 20 000 obs. demora ≈ 77 s no pior caso (B
 | 20/11/2026 | B0 nas experiências passa a ser `B0Counted` (mesmo modelo + contadores); salvaguarda de classe implementada no `_prune` comum; regra recriada calculada no modelo com o σ da regra removida | contadores exigidos pelo protocolo sem mexer no ficheiro do professor |
 | 20/11/2026 | valores por defeito do S3: θ = 0,3, G = 200 (centro da grelha) | alinhar com a grelha relativa |
 | 20/11/2026 | grelhas propostas a partir do diagnóstico no A–B–A: S1 H ∈ {50…1600}; S2 H₀ ∈ {20, 30, 50} × k ∈ {3, 5, 10}; S3 α ∈ {0,005; 0,01; 0,02} × θ ∈ {0,25; 0,3; 0,35}, G = 200 | as grelhas do plano inicial tinham valores fora da escala medida (H₀ = 100 desativava o termo adaptativo; θ = 0,5 removeria regras em uso) |
-| | | |
+| 27/11/2026 | Implementados `metrics.py` e `stats.py` para avaliação preditiva, estrutural e estatística | Automatizar a análise e comparação dos modelos B0, S1, S2 e S3 |
+| 27/11/2026 | Geradas métricas e gráficos da experiência A–B–A (5.000 observações, seed 100) | Obter resultados preliminares e analisar o impacto do pruning na accuracy e no número de regras |
+| 27/11/2026 | Identificadas limitações na análise estatística e recuperação após drift | Definir o trabalho pendente para a avaliação final |
 
 ---
 
